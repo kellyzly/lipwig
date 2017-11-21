@@ -207,7 +207,8 @@ class TezVertex(object):
 
 class HiveTezDag(object):
 	def __init__(self, q, raw):
-		raw = raw["Tez"]
+		#raw = raw["Tez"]
+		raw=raw["Spark"]
 		self.query = q
 		self.name = raw.get("DagName:") or raw.get("DagId:") or "Unknown"
 		self.edges = reduce(lambda a,b: a+b, [list(TezEdge.create(k,v)) for (k,v) in ((raw.has_key("Edges:") and raw["Edges:"]) or {}).items()], [])
@@ -226,8 +227,10 @@ class HiveTezDag(object):
 class HivePlan(object):
 	def __init__(self, q, raw):
 		self.raw = raw
-		stages = [(k,HiveTezDag(q, v)) for (k,v) in raw["STAGE PLANS"].items() if v.has_key("Tez")]
-		assert len(stages) == 1
+		#stages = [(k,HiveTezDag(q, v)) for (k,v) in raw["STAGE PLANS"].items() if v.has_key("Tez")]
+		stages = [(k, HiveTezDag(q, v)) for (k, v) in raw["STAGE PLANS"].items() if v.has_key("Spark")]
+	#	assert len(stages) == 1
+
 		self.stages = stages.pop()
 	def draw(self):
 		print "digraph g {"
